@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Folio Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #e60000; /* Red header */
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+        }
+
+        .company-name {
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .yellow-line {
+            height: 5px;
+            background-color: #ffc107; /* Yellow line */
+            margin: 0;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        h2 {
+            color: #e60000;
+        }
+
+        .record {
+            background-color: #fff0d9;
+            padding: 20px;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .record p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .key {
+            color: #c62828;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Logo">
+        <div class="company-name">Bajaj Capital Limited</div>
+        <div>Folio Report - {{ folio_number }}</div>
+    </div>
+
+    <div class="yellow-line"></div>
+
+    <div class="content">
+        <h2>Folio Details</h2>
+        <div class="record">
+            {% for key, value in record.items() %}
+                <p><span class="key">{{ key }}:</span> {{ value }}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

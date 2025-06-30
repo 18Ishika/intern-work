@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: folio-checker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GOOGLE_DRIVE_FILE_ID
+        value: 1K9yrMY-qJI5IjAQjrfZ_Odzos0cX0bt1
