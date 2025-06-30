@@ -2,21 +2,9 @@ services:
   - type: web
     name: folio-status-checker
     env: python
-    runtime: python-3.11
-    buildCommand: pip install --only-binary=all -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
-    envVars:
-      - key: GOOGLE_DRIVE_FILE_ID
-        value: 1K9yrMY-qJI5IjAQjrfZ_Odzos0cX0bt1services:
-  - type: web
-    name: folio-status-checker
-    env: python
-    runtime: python-3.11
-    buildCommand: |
-      python -m pip install --upgrade pip
-      pip install setuptools==69.5.1 wheel==0.43.0
-      pip install --no-build-isolation -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    plan: free
+    buildCommand: ""
+    startCommand: python app.py
     envVars:
       - key: GOOGLE_DRIVE_FILE_ID
         value: 1K9yrMY-qJI5IjAQjrfZ_Odzos0cX0bt1
