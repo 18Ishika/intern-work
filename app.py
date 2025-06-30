@@ -302,38 +302,62 @@
 #     app.run(debug=False, host='0.0.0.0', port=port)
 
 
-
-from flask import Flask
+from flask import Flask, request, render_template, send_file
 import os
 import sys
 
-print("=== STARTING DIAGNOSTIC APP ===")
-print(f"Python version: {sys.version}")
-print(f"PORT environment variable: {os.environ.get('PORT', 'NOT SET')}")
+print("=== TESTING IMPORTS ===")
+
+try:
+    import pandas as pd
+    print("✅ pandas imported successfully")
+except ImportError as e:
+    print(f"❌ pandas import failed: {e}")
+
+try:
+    import io
+    print("✅ io imported successfully")
+except ImportError as e:
+    print(f"❌ io import failed: {e}")
+
+try:
+    import requests
+    print("✅ requests imported successfully")
+except ImportError as e:
+    print(f"❌ requests import failed: {e}")
+
+try:
+    from datetime import datetime
+    print("✅ datetime imported successfully")
+except ImportError as e:
+    print(f"❌ datetime import failed: {e}")
+
+try:
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.lib import colors
+    print("✅ reportlab imported successfully")
+except ImportError as e:
+    print(f"❌ reportlab import failed: {e}")
+
+print("=== ALL IMPORTS TESTED ===")
 
 app = Flask(__name__)
 
-print("Flask app created successfully")
-
 @app.route('/')
 def hello():
-    return '<h1>🎉 Flask App is Working!</h1><p>Ready to debug your main app!</p>'
+    return '<h1>🎉 All Imports Working!</h1><p>Ready for next step!</p>'
 
 @app.route('/health')
 def health():
     return {
         'status': 'healthy',
         'port': os.environ.get('PORT', 5000),
-        'python_version': sys.version
+        'imports': 'all_successful'
     }
 
-print("Routes defined successfully")
-
 if __name__ == '__main__':
-    try:
-        port = int(os.environ.get('PORT', 5000))
-        print(f"=== STARTING SERVER ON PORT {port} ===")
-        app.run(debug=False, host='0.0.0.0', port=port)
-    except Exception as e:
-        print(f"ERROR STARTING SERVER: {e}")
-        raise
+    port = int(os.environ.get('PORT', 5000))
+    print(f"=== STARTING SERVER ON PORT {port} ===")
+    app.run(debug=False, host='0.0.0.0', port=port)
