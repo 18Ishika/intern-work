@@ -300,64 +300,107 @@
 #     port = int(os.environ.get('PORT', 5000))
 #     print(f"Starting on port: {port}")
 #     app.run(debug=False, host='0.0.0.0', port=port)
-
-
 from flask import Flask, request, render_template, send_file
 import os
-import sys
-
-print("=== TESTING IMPORTS ===")
-
-try:
-    import pandas as pd
-    print("✅ pandas imported successfully")
-except ImportError as e:
-    print(f"❌ pandas import failed: {e}")
-
-try:
-    import io
-    print("✅ io imported successfully")
-except ImportError as e:
-    print(f"❌ io import failed: {e}")
-
-try:
-    import requests
-    print("✅ requests imported successfully")
-except ImportError as e:
-    print(f"❌ requests import failed: {e}")
-
-try:
-    from datetime import datetime
-    print("✅ datetime imported successfully")
-except ImportError as e:
-    print(f"❌ datetime import failed: {e}")
-
-try:
-    from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib.styles import getSampleStyleSheet
-    from reportlab.lib import colors
-    print("✅ reportlab imported successfully")
-except ImportError as e:
-    print(f"❌ reportlab import failed: {e}")
-
-print("=== ALL IMPORTS TESTED ===")
+import pandas as pd
+import io
+import requests
+from datetime import datetime
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
 
 app = Flask(__name__)
 
+# Google Drive file ID - set this as environment variable
+GOOGLE_DRIVE_FILE_ID = os.getenv('GOOGLE_DRIVE_FILE_ID', '1K9yrMY-qJI5IjAQjrfZ_Odzos0cX0bt1')
+
+# Initialize df as None - DON'T load data on startup
+df = None
+
+print("=== APP STRUCTURE LOADED ===")
+
+# Add all your functions but don't call load_data() on startup
+def download_csv_from_drive(file_id):
+    """Download CSV from Google Drive using file ID"""
+    try:
+        download_url = f"https://drive.google.com/uc?id={file_id}"
+        print(f"Downloading from: {download_url}")
+        
+        response = requests.get(download_url, timeout=10)  # Reduced timeout
+        response.raise_for_status()
+        
+        # Read CSV from response content
+        csv_data = pd.read_csv(io.StringIO(response.text))
+        print(f"Successfully downloaded {len(csv_data)} records from Google Drive")
+        return csv_data
+        
+    except Exception as e:
+        print(f"Error downloading/processing CSV: {e}")
+        return None
+
+def preprocess_data(df_input):
+    """Preprocess the downloaded data"""
+    # Your existing preprocessing code here
+    return df_input  # Simplified for testing
+
+def load_data():
+    """Load data from Google Drive"""
+    global df
+    print("Loading data from Google Drive...")
+    csv_data = download_csv_from_drive(GOOGLE_DRIVE_FILE_ID)
+    if csv_data is not None:
+        df = preprocess_data(csv_data)
+        print(f'Successfully loaded and processed {len(df)} records')
+        return True
+    else:
+        print("Failed to load data from Google Drive")
+        return False
+
+# Error handlers
+@app.errorhandler(400)
+def bad_request(error):
+    return f'<h1>400 Bad Request</h1><p>{error}</p>', 400
+
+@app.errorhandler(500)
+def internal_error(error):
+    return f'<h1>500 Internal Error</h1><p>{error}</p>', 500
+
 @app.route('/')
-def hello():
-    return '<h1>🎉 All Imports Working!</h1><p>Ready for next step!</p>'
+def index():
+    return '''
+    <h1>Folio Status Checker</h1>
+    <p>App structure loaded successfully!</p>
+    <p>Data loaded: ''' + str(df is not None) + '''</p>
+    <p><a href="/load-data">Click here to load data</a></p>
+    <p><a href="/health">Health Check</a></p>
+    '''
+
+@app.route('/load-data')
+def load_data_route():
+    """Route to manually load data for testing"""
+    if load_data():
+        return f'<h1>✅ Data loaded successfully!</h1><p>Records: {len(df)}</p>'
+    else:
+        return '<h1>❌ Failed to load data</h1>'
 
 @app.route('/health')
 def health():
     return {
         'status': 'healthy',
         'port': os.environ.get('PORT', 5000),
-        'imports': 'all_successful'
+        'data_loaded': df is not None,
+        'records_count': len(df) if df is not None else 0
     }
 
 if __name__ == '__main__':
+    print("Starting Folio Status Checker...")
+    print(f"Google Drive File ID: {GOOGLE_DRIVE_FILE_ID}")
+    
+    # DON'T load data on startup - this was likely causing the hang
+    print("App ready! Data will be loaded on demand.")
+    
     port = int(os.environ.get('PORT', 5000))
-    print(f"=== STARTING SERVER ON PORT {port} ===")
+    print(f"Starting on port: {port}")
     app.run(debug=False, host='0.0.0.0', port=port)
