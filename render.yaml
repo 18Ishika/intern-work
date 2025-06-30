@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: ""
     startCommand: python app.py
+    runtime: python-3.10 
     envVars:
       - key: GOOGLE_DRIVE_FILE_ID
         value: 1K9yrMY-qJI5IjAQjrfZ_Odzos0cX0bt1
