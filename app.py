@@ -287,19 +287,16 @@ def download_folio_report(folio_number):
         return render_template('500.html', 
                              error_message="Error generating PDF report"), 500
 
+
+
 if __name__ == '__main__':
     print("Starting Folio Status Checker...")
     print(f"Google Drive File ID: {GOOGLE_DRIVE_FILE_ID}")
     
-    # Load data on startup
-    if load_data():
-        print("Data loaded successfully!")
-        if df is not None:
-            print(f"Available columns: {list(df.columns)}")
-            print(f"Total records: {len(df)}")
-    else:
-        print("Warning: Could not load data on startup. Will retry on first request.")
+    # Don't load data on startup - load it on first request instead
+    print("App will load data on first request to avoid startup delays")
     
     # Get port from environment variable (Render sets this)
     port = int(os.environ.get('PORT', 5000))
+    print(f"Starting on port: {port}")
     app.run(debug=False, host='0.0.0.0', port=port)
