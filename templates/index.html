@@ -3,22 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Folio Checker - Bajaj Capital </title>
+  <title>Folio Checker - Bajaj Capital</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background-color:rgb(219, 217, 217);
+      background-color: rgb(219, 217, 217);
     }
 
     header {
-      background-color:rgb(219, 25, 25);
+      background-color: rgb(219, 25, 25);
       color: white;
       padding: 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      height:100px;
+      height: 100px;
     }
 
     .yellow-border {
@@ -57,7 +56,7 @@
     }
 
     button {
-      background-color:rgb(236, 55, 55);
+      background-color: rgb(236, 55, 55);
       color: white;
       padding: 12px;
       border: none;
@@ -68,14 +67,6 @@
 
     button:hover {
       background-color: darkred;
-    }
-
-    .signin-link {
-      color: white;
-      text-decoration: underline;
-      font-size: 14px;
-      padding: 20px;
-      cursor: pointer;
     }
 
     .message {
@@ -129,7 +120,6 @@
       text-decoration: none;
     }
 
-    /* New styles for multiple investments */
     .folio-summary {
       background-color: #f8f9fa;
       border: 2px solid #dee2e6;
@@ -232,7 +222,6 @@
       .investment-details {
         grid-template-columns: 1fr;
       }
-      
       .summary-stats {
         flex-direction: column;
         gap: 10px;
@@ -242,96 +231,93 @@
 </head>
 <body>
 
-  <header>
+<header>
   <div style="display: flex; align-items: center; gap: 15px;">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo" style="height: 80px;" onerror="this.style.display='none'">
     <strong>Bajaj Capital</strong>
   </div>
-  <div><a href="/employee-login"><span class="signin-link">Employee? Sign In</span></a></div>
 </header>
 
-  <div class="yellow-border"></div>
+<div class="yellow-border"></div>
 
-  <div class="container">
-    <h2>Folio Checker</h2>
-    
-    <form method="POST" action="/">
-      <label for="folio_number">Folio Number:</label>
-      <input type="text" id="folio_number" name="folio_number" placeholder="Enter your folio number" value="{{ folio_number }}" required>
-      <button type="submit">Check Folio</button>
-    </form>
+<div class="container">
+  <h2>Folio Checker</h2>
 
-    {% if error %}
-      <div class="message error"><strong>{{ error }}</strong></div>
-    {% endif %}
+  <form method="POST" action="/">
+    <label for="folio_number">Folio Number:</label>
+    <input type="text" id="folio_number" name="folio_number" placeholder="Enter your folio number" value="{{ folio_number }}" required>
+    <button type="submit">Check Folio</button>
+  </form>
 
-    {% if result %}
-      <div class="folio-summary">
-        <h3>Folio: {{ result.folio_number }}</h3>
-        
-        <div class="summary-stats">
-          <div class="stat-item">
-            <div class="stat-number">{{ result.total_investments }}</div>
-            <div class="stat-label">Total Investments</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number" style="color: green;">{{ result.active_investments }}</div>
-            <div class="stat-label">Active</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number" style="color: red;">{{ result.total_investments - result.active_investments }}</div>
-            <div class="stat-label">Inactive</div>
-          </div>
+  {% if error %}
+    <div class="message error"><strong>{{ error }}</strong></div>
+  {% endif %}
+
+  {% if result %}
+    <div class="folio-summary">
+      <h3>Folio: {{ result.folio_number }}</h3>
+
+      <div class="summary-stats">
+        <div class="stat-item">
+          <div class="stat-number">{{ result.total_investments }}</div>
+          <div class="stat-label">Total Investments</div>
         </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: green;">{{ result.active_investments }}</div>
+          <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: red;">{{ result.total_investments - result.active_investments }}</div>
+          <div class="stat-label">Inactive</div>
+        </div>
+      </div>
 
-        <p><strong>Overall Status:</strong> 
-          <span class="{% if result.status == 'Active' %}status-active{% elif result.status == 'Inactive' %}status-inactive{% else %}status-unknown{% endif %}">
-            {{ result.status }}
-          </span>
-        </p>
+      <p><strong>Overall Status:</strong>
+        <span class="{% if result.status == 'Active' %}status-active{% elif result.status == 'Inactive' %}status-inactive{% else %}status-unknown{% endif %}">
+          {{ result.status }}
+        </span>
+      </p>
 
-        {% if result.investments|length > 1 %}
-          <h4>All Investments:</h4>
-          {% for investment in result.investments %}
-            <div class="investment-card">
-              <div class="investment-header">
-                <span class="investment-number">Investment #{{ loop.index }}</span>
-                <span class="investment-status {{ investment.status.lower() }}">{{ investment.status }}</span>
-              </div>
-              
-              <div class="investment-details">
-                {% for key, value in investment.details.items() %}
-                  {% if value and value != '' and key in ['Scheme Name', 'Amount', 'Frequency', 'Start Date', 'End Date', 'Mapped_Status', 'AgentName', 'PAN'] %}
-                    <div><strong>{{ key }}:</strong> {{ value }}</div>
-                  {% endif %}
-                {% endfor %}
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <h4>Investment Details:</h4>
+      {% if result.investments|length > 1 %}
+        <h4>All Investments:</h4>
+        {% for investment in result.investments %}
           <div class="investment-card">
+            <div class="investment-header">
+              <span class="investment-number">Investment #{{ loop.index }}</span>
+              <span class="investment-status {{ investment.status.lower() }}">{{ investment.status }}</span>
+            </div>
             <div class="investment-details">
-              {% for key, value in result.details.items() %}
-                {% if value and value != '' %}
+              {% for key, value in investment.details.items() %}
+                {% if value and value != '' and key in ['Scheme Name', 'Amount', 'Frequency', 'Start Date', 'End Date', 'Mapped_Status', 'AgentName', 'PAN'] %}
                   <div><strong>{{ key }}:</strong> {{ value }}</div>
                 {% endif %}
               {% endfor %}
             </div>
           </div>
-        {% endif %}
-        
-        <!-- Download button -->
-        <div style="text-align: center;">
-          <a href="/download-folio-report/{{ result.folio_number }}" class="download-btn">
-            📄 Download Complete PDF Report
-          </a>
+        {% endfor %}
+      {% else %}
+        <h4>Investment Details:</h4>
+        <div class="investment-card">
+          <div class="investment-details">
+            {% for key, value in result.details.items() %}
+              {% if value and value != '' %}
+                <div><strong>{{ key }}:</strong> {{ value }}</div>
+              {% endif %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
-    {% endif %}
+      {% endif %}
 
-    <p style="text-align:center; color:gray; margin-top: 20px;">Total records loaded: {{ total_records }}</p>
-  </div>
+      <div style="text-align: center;">
+        <a href="/download-folio-report/{{ result.folio_number }}" class="download-btn">
+          📄 Download Complete PDF Report
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+  <p style="text-align:center; color:gray; margin-top: 20px;">Total records loaded: {{ total_records }}</p>
+</div>
 
 </body>
 </html>
